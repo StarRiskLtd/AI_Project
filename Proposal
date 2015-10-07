@@ -1,0 +1,22 @@
+Tic-Tac-Toe	Russell Hathaway & Jason Meyer
+Overview
+The game we propose complements the many forms of Tic-tac-toe for casual computer game players.  This is a deterministic, zero-sum game featuring minimax-cutoff procedures and depth first searching with alpha-beta pruning to make game play seamless and efficient between the human-player and computer opponent.  Our final goal is to create a game that assumes rational thinking from both players and a challenging, replay-able game for any user.
+
+Potential Users
+The potential users for this site are all users of computers who participate in computer games for recreation.  These potential users will be guided in our game by our text display of rules.  After initial examples of our game, users will be prompted to create a game and begin play.  Our target audience for this site is the age 5 – 90 age group.  This demographic is also completely immersed in the gaming and will enjoy the simplicity of a simple game.  We anticipate that the average user of our website will spend 10 – 15 hours a week engaged in computer game play.
+
+Game Organization
+Construction of an adversarial game requires the use of a zero-sum evaluation to determine the value of the board for each opponent.  The minimax-cutoff procedure helps achieve the best play at in each ply (one move of each player), considering the current environment.  A depth first search algorithm allows the computer to calculate the appropriate moves in a finite depth creating a good strategy balanced by reaction time of the computer. This is enhanced by incorporating alpha-beta pruning for trimming ‘branches’ to increase the chance of the best choice being found in order to save time and effort of the computer.
+
+Game Interaction
+These are the steps to run the game.
+●	Start
+o	Game Information page
+o	Begin play
+●	Play
+o	Display board and controls
+o	Progress through play
+●	Game over
+o	Display Winner
+o	Ask to start another game (return to Start)
+o	Exit
