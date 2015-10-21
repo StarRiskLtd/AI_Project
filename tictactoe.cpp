@@ -215,7 +215,17 @@ void getInput()
 	int board_position_selection;
 	cout << "O's move :";
 	cin >> board_position_selection;
-
+    while (cin.fail()) {
+        
+        cout << "Error" << endl;
+        cout<<"Invalid choice, must be [1-9] inclusive."<<endl;
+        cout << "O's move :";
+        std::cin.clear();
+        std::cin.ignore(256,'\n');
+        cin>>board_position_selection;
+        
+    }
+    
 	switch (board_position_selection)
 	{
 		case 1 :
@@ -223,8 +233,10 @@ void getInput()
                 board[0][0] = 'O';
                 break;
             }
+            else{
             getInput();
             break;
+            }
 		case 2 :
             if(board[0][1]==0){
                 board[0][1] = 'O';
@@ -282,7 +294,9 @@ void getInput()
             getInput();
             break;
             
-        default:  getInput();
+        default:
+            getInput();
+            break;
 
 
 	}
