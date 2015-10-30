@@ -1,7 +1,5 @@
 # AI_Project
-a game of tic tac toe with artificial intelligence and alpha-beta pruning.
-
-A work in progress.
+a game of tic tac toe with alpha-beta pruning.
 
 compile using:
 g++ tictactoe.cpp
