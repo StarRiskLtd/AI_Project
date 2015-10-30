@@ -1,11 +1,21 @@
+//CS471
+//November 2015
+//Jason Meyer & Russell Hathaway
+//
+//Tic tac toe AI using alpha beta pruning
+//with the minimax algorithm.
+//A depth limit may be introduced via a prompt
+//which allows the depth of the AI algorithm
+//search to be limited.
+
+
 #include <stdio.h>
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
 #include <string>
 #include <iostream>
 #include <vector>
-#include <limits>        /* max/min */
-
+#include <limits>        /* max/min for alpha/beta*/
 
 using std::string;
 using std::cout;
@@ -16,12 +26,13 @@ using std::max;
 using std::min;
 
 
-
+//The tic tac toe squares are represented by a multidimensional array
 char board[3][3] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 char player = 'X';
 bool win = false;
 
-//Each square on the board has an XY pos.
+
+//Each square on the board contains a pair of XY coordinates
 class Square {
    
     public:
@@ -33,12 +44,14 @@ class Square {
     
 };
 
-//vector for empty square indexes
+//A vector of all empty squares with their coordinates in the 3d array
 vector<Square> availableSquares;
+
+//Call getEmptySquares to return a vector of current available squares
 vector<Square> getEmptySquares() {
     
-    
     availableSquares.clear();
+    
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 3; ++j) {
             if (board[i][j] != 'X' && board[i][j] != 'O') {
@@ -50,15 +63,15 @@ vector<Square> getEmptySquares() {
     return availableSquares;
 }
 
-//Square Value contains a square and its corresponding value
 
+//Each square has a value, An object of class Square Value contains a square and its corresponding value
 class SquareValue {
  
     public:
     Square square;
     int value;
     
-   
+    //constructor
     SquareValue( Square current_square, int square_value) : square(current_square), value(square_value){
         square = current_square;
         value = square_value;
@@ -67,10 +80,16 @@ class SquareValue {
     void squareValToString() {
         cout << "Square: " << "[" << square.X << ", " << square.Y << "]  " << "Value: " << value ;
     }
+    
+    ~SquareValue(){};
 };
 
+
+//A vector of the current child Square Values is used to represent the available moves for MAX or MIN
 vector<SquareValue> child_scores_vector;
 
+
+//Choose best square for the AI
 Square getBestSquare() {
     int MAX = -100000;
     int best = -1;
@@ -88,7 +107,7 @@ Square getBestSquare() {
     return child_scores_vector[best].square;
 }
 
-
+//return the current value of a square
 int currentValue(int X, int O){
     int currentValue;
     if (X == 3) {
@@ -129,11 +148,31 @@ void drawBoard()
     cout << endl;
 }
 
-//get the value of a state, called within alphabeta
+
+//get the value of a square move , called within alphabeta
 int getChildValue() {
     int score = 0;
     
-    //Check all rows
+    
+    //evaluate columns
+    for (int j = 0; j < 3; ++j) {
+        int empty = 0;
+        int X = 0;
+        int O = 0;
+        for (int i = 0; i < 3; ++i) {
+            if (board[i][j] == 0) {
+                empty++;
+            } else if (board[i][j] == 'X') {
+                X++;
+            } else {
+                O++;
+            }
+        }
+        //update the score
+        score+=currentValue(X, O);
+    }
+    
+    //evaluate rows
     for (int i = 0; i < 3; ++i) {
         int empty = 0;
         int X = 0;
@@ -148,31 +187,17 @@ int getChildValue() {
             }
             
         }
+        //update score
         score+=currentValue(X, O);
     }
     
-    //Check all columns
-    for (int j = 0; j < 3; ++j) {
-        int empty = 0;
-        int X = 0;
-        int O = 0;
-        for (int i = 0; i < 3; ++i) {
-            if (board[i][j] == 0) {
-                empty++;
-            } else if (board[i][j] == 'X') {
-                X++;
-            } else {
-                O++;
-            }
-        }
-        score+=currentValue(X, O);
-    }
+    
     
     int empty = 0;
     int X = 0;
     int O = 0;
     
-    //Check diagonal (first)
+    //evaluate diagonals
     for (int i = 0, j = 0; i < 3; ++i, ++j) {
         if (board[i][j] == 'X') {
             X++;
@@ -183,13 +208,15 @@ int getChildValue() {
         }
     }
     
+    //update the score
     score+=currentValue(X, O);
     
+    //reset temp values
     empty = 0;
     X = 0;
     O = 0;
     
-    //Check Diagonal (Second)
+   
     for (int i = 2, j = 0; i > -1; --i, ++j) {
         if (board[i][j] == 'X') {
             X++;
@@ -200,6 +227,7 @@ int getChildValue() {
         }
     }
     
+    //update the score
     score+=currentValue(X, O);
     return score;
 }
@@ -217,7 +245,6 @@ void getInput()
 	cin >> board_position_selection;
     while (cin.fail()) {
         
-        cout << "Error" << endl;
         cout<<"Invalid choice, must be [1-9] inclusive."<<endl;
         cout << "O's move :";
         std::cin.clear();
@@ -304,6 +331,8 @@ void getInput()
 
 }
 
+
+//check for winning state or tie state
 bool checkWin()
 {
     //check if the game is a tie
@@ -334,6 +363,7 @@ bool checkWin()
            return true;
         }
     }
+    //end check win for 0
     
     return false;
     
@@ -342,20 +372,22 @@ bool checkWin()
 
 
 
-
+//a depth limit can be used to reduce the AI
 int depth_limit = -1;
 
+
+//minimax depth first traversal evaluates nodes and updates alpha or beta as required.
 int alphaBeta(char player, int depth, int alpha, int beta){
     
-    if(beta<=alpha){
-        cout << "Performing alpha-beta pruning. Depth :  " <<  depth << endl;
+    if(beta<=alpha){ //Evaluate adjacent nodes only if beta > alpha, otherwise prune.
+        //cout << "Performing alpha-beta pruning. Depth :  " <<  depth << endl;
         if(player == 'X')
         {
-            return std::numeric_limits<int>::max();
+            return std::numeric_limits<int>::max();  //  represents +infinity
         }
         else
         {
-            return std::numeric_limits<int>::min();
+            return std::numeric_limits<int>::min(); // represents -infinity
         }
     }
     
@@ -367,16 +399,17 @@ int alphaBeta(char player, int depth, int alpha, int beta){
    
     vector<Square> empty_squares = getEmptySquares();
     
+    //if there are no moves left, return
     if(empty_squares.size() == 0) {
         return 0;
     }
     if(depth==0) {
         
-        child_scores_vector.clear();
+        child_scores_vector.clear();  //ensure child_scores_vector is cleared
     }
     
-    int MAX = std::numeric_limits<int>::min();
-    int MIN = std::numeric_limits<int>::max();
+    int MAX = std::numeric_limits<int>::min();  // +infinity
+    int MIN = std::numeric_limits<int>::max();  // -infinity
     
     for(std::vector<Square>::iterator current_square = empty_squares.begin(); current_square != empty_squares.end(); ++current_square)
     {
@@ -391,29 +424,23 @@ int alphaBeta(char player, int depth, int alpha, int beta){
             
             //update MAX value
             MAX = max(MAX, current_value);
-            
             //update alpha
             alpha = max(current_value, alpha);
-            
             if(depth == 0)
                 
                 //push square value into scores vector
-                
                 child_scores_vector.push_back(SquareValue(*current_square, current_value));
             
         }else if(player == 'O'){
             
             board[current_square->X][current_square->Y] = 'O';
             current_value = alphaBeta('X', depth+1, alpha, beta);
-            
             //update MIN
             MIN = min(MIN, current_value);
-            
             //update beta
             beta = min(current_value, beta);
         }
-        //Reset board
-        drawBoard(); cout<<depth<<endl;
+        //reset square to empty value
         board[current_square->X][current_square->Y] = 0;
         
         //Don't evaluate the rest of the adjacent nodes if Alpha-Beta pruning was performed,
@@ -431,52 +458,57 @@ int alphaBeta(char player, int depth, int alpha, int beta){
 
 
 int main(void) {
+    cout << "         TIC TAC TOE AI" << endl;
+    cout << "             CS471" << endl;
+    cout << "   Jason Meyer & Russell Hathaway" << endl;
+
+    cout<< "      1 2 3           - - -" << endl;
+    cout<< "      4 5 6           - - -" << endl;
+    cout<< "      7 8 9           - - -" << endl;
+    cout << "spaces are numbered in order" <<endl;
     /* initialize random seed: */
     srand (time(NULL));
-	drawBoard();
     
     string userin;
+    
     cout << "AI is X, You are O, do you want to go first?(y/n)";
+    
     cin >> userin;
     if(userin.substr(0,1)=="n"|| userin.substr(0,1)=="N")/* if AI goes first */
     {
         int temp = rand() % 3 , temp2 = rand() % 3;/* generate numbers between 0 and 2: */
 
         board[temp][temp2] = 'X'; //place AIs first move using random numbers
-        drawBoard();        //display the game board
         
         
     }
+    cout << string( 5, '\n' );
     //Begin Game
 	while(!checkWin())
 	{
-   
-    cout << string( 100, '\n' );
-    drawBoard();
+    drawBoard();    cout << string( 5, '\n' );
 	getInput();
-        
-    cout << string( 100, '\n' );
-	drawBoard();
-    if(checkWin()){break;}
-	
-        
+	drawBoard();    cout << string( 5, '\n' );
+    
+    if(checkWin()){break;}      //check if O made a game-ending move
+    
+    //calculate the best value for AI player X
     alphaBeta('X', 0, std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
-        
-   
-    Square ai_best_square = getBestSquare();
-    board[ai_best_square.X][ai_best_square.Y] = 'X';
+    Square ai_best_square = getBestSquare();            //get the best square for AI player X
+    board[ai_best_square.X][ai_best_square.Y] = 'X';  //draw the X for AI player
         
         
 	}
+    //End Game
     if(getEmptySquares().empty()){
-        cout << string( 100, '\n' );
+       cout << string( 5, '\n' );
         drawBoard();
+        
         cout<< "Tie Game!"<<endl;
         return 0;
     }
-    //End Game
-    cout << string( 100, '\n' );
+    cout << string( 5, '\n' );
     drawBoard();
-    cout << "winner!" << endl;
+    cout << "Winner!" << endl;
 	return 0;
 }
