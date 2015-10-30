@@ -97,6 +97,7 @@ vector<SquareValue> child_scores_vector;
 
 
 
+
 //Choose best square for the AI
 Square getBestSquare() {
     int MAX = -100000;
@@ -501,14 +502,16 @@ int main(void) {
 	}
     //End Game
     if(getEmptySquares().empty()){
-       cout << string( 5, '\n' );
+        cout << string( 5, '\n' );
         drawBoard();
+        cout << string( 5, '\n' );
         cout<< "Tie Game!"<<endl;
         return 0;
     }
     else{
         cout << string( 5, '\n' );
         drawBoard();
+        cout << string( 5, '\n' );
         cout << "Winner!" << endl;
         return 0;
     }
