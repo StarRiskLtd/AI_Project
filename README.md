@@ -2,4 +2,4 @@
 a game of tic tac toe with alpha-beta pruning.
 
 compile using:
-g++ tictactoe.cpp
+./hathaway_meyer_proj1
