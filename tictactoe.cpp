@@ -4,7 +4,7 @@
 //
 //Tic tac toe AI using alpha beta pruning
 //with the minimax algorithm.
-//A depth limit may be introduced via a prompt
+//A depth limit may be introduced 
 //which allows the depth of the search to be limited.
 
 
